@@ -49,26 +49,26 @@ typedef enum {
 	TOK_OR,
 	TOK_NOT,
 	TOK_ARROW,
-}
+} TokenKind;
 
 typedef struct {
-    TokenKind kind;
-    const char *start;
-    int len;
-    int line;
-    /* values for numbers and strings */
-    union {
-        long num_val;
-        const char *str_val;
-    };
+	TokenKind kind;
+	const char *start;
+	int len;
+	int line;
+	/* value for numbers and strings */
+	union {
+		long num_val;
+		const char *str_val;
+	};
 } Token;
 
 typedef struct {
-    const char *src;
-    int pos;
-    int line;
-    Token cur;
-    Token peek;
+	const char *src;
+	int pos;
+	int line;
+	Token cur;
+	Token peek;
 } Lexer;
 
 void lexer_init(Lexer *lx, const char *src);

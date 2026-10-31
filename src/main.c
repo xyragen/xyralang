@@ -1,4 +1,6 @@
 #include "xyra.h"
+#include "ast.h"
+#include "parser.h"
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -28,21 +30,21 @@ int main(int argc, char **argv) {
 		return 1;
 	}
 
-	/* lex the source */
-	Lexer lx;
-	lexer_init(&lx, src);
+	/* parse the source */
+	Parser p;
+	AST *tree = parse(&p, src);
 
-	/* dump tokens for now */
-	while (lx.cur.kind != TOK_EOF) {
-		Token *t = &lx.cur;
-		if (t->kind == TOK_NUM) {
-			printf("num(%ld)\n", t->num_val);
-		} else if (t->kind == TOK_ID) {
-			printf("id(%.*s)\n", t->len, t->start);
-		} else {
-			printf("%s\n", token_name(t->kind));
+	if (p.errors > 0) {
+		fprintf(stderr, "xyra: %d parse errors\n", p.errors);
+		return 1;
+	}
+
+	/* print top level functions */
+	for (int i = 0; i < tree->count; i++) {
+		ASTNode *fn = tree->items[i];
+		if (fn->kind == AST_FN) {
+			printf("fn %s(%d params) -> body\n", fn->fn.name, fn->fn.nparams);
 		}
-		lexer_next(&lx);
 	}
 
 	return 0;
